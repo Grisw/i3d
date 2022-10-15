@@ -4,7 +4,7 @@ import os
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-b', '--beedog_path', type=str)
+    parser.add_argument('beedog_path', type=str)
     parser.add_argument('-d', '--dataset', type=str, default='mpii_cooking')
 
     args = parser.parse_args()
@@ -23,7 +23,11 @@ def main():
             dst_dir = os.path.join('videos', 'raw', class_name)
             os.makedirs(dst_dir, exist_ok=True)
 
-            os.symlink(os.path.join(video_path, clip), os.path.join(dst_dir, f'{video}_{clip}'))
+            dst_path = os.path.join(dst_dir, f'{video}_{clip}')
+            if os.path.exists(dst_path):
+                continue
+
+            os.symlink(os.path.join(video_path, clip), dst_path)
 
     with open('classes.txt', 'w') as f:
         for class_name in class_names:
