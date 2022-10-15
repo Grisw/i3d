@@ -3,6 +3,8 @@ import random
 import cv2
 import numpy as np
 
+import tqdm
+from concurrent import futures
 from utils.utils import *
 
 _VIDEO_EXT = ['.avi', '.mp4', '.mov']
@@ -211,7 +213,7 @@ def pre_process(video_path, opts):
     with Timer('Compute flow'):
         log('Extract Flow...')
         flow_data = compute_flow(video_object, out_path_dic)
-    return rgb_data, flow_data
+    return rgb_data, flow_data, video_path
 
 
 def mass_process(opts):
@@ -229,10 +231,22 @@ def mass_process(opts):
         else:
             item_paths.extend([i for i in class_path.iterdir()
                                if not i.stem.startswith(".") and i.is_file() and i.suffix.lower() in _VIDEO_EXT])
+
+    executor = futures.ThreadPoolExecutor(max_workers=opts.max_workers)
+    tasks = []
+
     for item_path in item_paths:
-        with Timer(item_path.name):
-            log("Now start processing:", str(item_path))
-            pre_process(item_path, opts)
+        task = executor.submit(pre_process, item_path, opts)
+        tasks.append(task)
+
+    for task in tqdm.tqdm(futures.as_completed(tasks), total=len(tasks), desc='Pre-processing'):
+        try:
+            rgb_data, flow_data, video_path = task.result()
+            tqdm.tqdm.write(f'Done: {video_path}')
+        except Exception as e:
+            tqdm.tqdm.write(f'Exception occurred: {e}')
+
+    executor.shutdown()
 
 
 def main(opts):
@@ -251,6 +265,10 @@ if __name__ == '__main__':
         '--mass',
         action='store_true',
         help='Compute RGBs and Flows massively.')
+    parser.add_argument(
+        '--max_workers',
+        type=int, default=5
+    )
     parser.add_argument(
         '--init_dir',
         action='store_true',

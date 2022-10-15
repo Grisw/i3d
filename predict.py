@@ -50,7 +50,7 @@ if __name__ == "__main__":
     if args.sample_path is not None:
         out_path = Path("data/temp")
         if not out_path.exists(): out_path.mkdir()
-        rgb_data, flow_data = pre_process(args.sample_path, sample_rate=args.sample_rate, out_path=out_path)
+        rgb_data, flow_data, _ = pre_process(args.sample_path, sample_rate=args.sample_rate, out_path=out_path)
     else:
         log("Please using `--sample_path='your/video/path'` specify a video file or image set folder path to start.")
         exit(0)
