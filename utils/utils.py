@@ -21,13 +21,13 @@ class Timer(object):
 
 def log(*snippets, end=None):
     s = time.strftime("==> [%Y-%m-%d %H:%M:%S]", time.localtime()) + " " + "".join([str(s) for s in snippets])
-    if end is None:
-        print(s)
-    else:
-        print(s, end=end)
+    # if end is None:
+    #     print(s)
+    # else:
+    #     print(s, end=end)
 
     with open('model/train.log', 'a') as f:
-        f.writelines([s])
+        f.writelines([s, '\n'])
 
 
 def build_data_path(is_image=False, data_root=None):
