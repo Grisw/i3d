@@ -1,3 +1,4 @@
+import os.path
 import random
 
 import cv2
@@ -236,6 +237,11 @@ def mass_process(opts):
     tasks = []
 
     for item_path in item_paths:
+        class_name = item_path.parts[-2]
+        file_name = item_path.stem
+        if os.path.exists(f'data/videos/pre-processed/train/{class_name}/{file_name}/flow-FPS_5.npy') and \
+                os.path.exists(f'data/videos/pre-processed/train/{class_name}/{file_name}/rgb-FPS_5.npy'):
+            continue
         task = executor.submit(pre_process, item_path, opts)
         tasks.append(task)
 
