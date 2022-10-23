@@ -47,6 +47,8 @@ def train_model(models, criterion, optimizers, schedulers, num_epochs=25):
             # Iterate over data.
             data = {}
             for data["rgb"], data["flow"], labels in data_loaders[phase]:
+                if data["rgb"] is None or data["flow"] is None:
+                    continue
                 for stream in streams:
                     data[stream] = data[stream].to(device)
                 labels = labels.to(device)
