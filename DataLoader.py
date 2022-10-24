@@ -93,7 +93,7 @@ class RGBFlowDataset(Dataset):
         rgb_data = self.temporal_transform(rgb_data)
         if len(rgb_data) == 0:
             print(f'RGB EMPTY: {self.data_pairs[idx]}', flush=True)
-            return None, None, self.data_pairs[idx][2]
+            return None, None, None
         rgb_data = self.spacial_transform.transform(rgb_data)
         # print(rgb_data.shape)
         rgb_data = rgb_data.permute(1,0,2,3)
@@ -101,7 +101,7 @@ class RGBFlowDataset(Dataset):
         flow_data = self.temporal_transform(flow_data)
         if len(flow_data) == 0:
             print(f'FLOW EMPTY: {self.data_pairs[idx]}', flush=True)
-            return rgb_data, None, self.data_pairs[idx][2]
+            return None, None, None
         flow_data = self.spacial_transform.transform(flow_data)
         flow_data = flow_data.permute(1,0,2,3)
         # print("Flow: ", flow_data.shape, "Rgb: ", rgb_data.shape, self.data_pairs[idx][0], self.data_pairs[idx][-1])

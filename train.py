@@ -9,6 +9,7 @@ from sklearn.metrics import f1_score
 from src.i3dpt import Unit3Dpy
 from utils.temporal_transforms import TemporalRandomCrop
 from utils.utils import *
+from utils.collate_fn import default_collate
 from src.i3dpt import I3D
 from DataLoader import RGBFlowDataset
 from opts import parser
@@ -47,7 +48,7 @@ def train_model(models, criterion, optimizers, schedulers, num_epochs=25):
             # Iterate over data.
             data = {}
             for data["rgb"], data["flow"], labels in data_loaders[phase]:
-                if data["rgb"] is None or data["flow"] is None:
+                if data["rgb"] is None or data["flow"] is None or labels is None:
                     continue
                 for stream in streams:
                     data[stream] = data[stream].to(device)
@@ -181,7 +182,7 @@ if __name__ == "__main__":
                                            out_frame_num=args.out_frame_num,
                                            augment=(x == "train"))
                          for x in ['train', 'val']}
-    data_loaders = {x: torch.utils.data.DataLoader(rgb_flow_datasets[x], batch_size=8,
+    data_loaders = {x: torch.utils.data.DataLoader(rgb_flow_datasets[x], batch_size=8, collate_fn=default_collate,
                                                    shuffle=True, num_workers=0)
                     for x in ['train', 'val']}
     dataset_sizes = {x: len(rgb_flow_datasets[x]) for x in ['train', 'val']}
