@@ -87,7 +87,11 @@ class RGBFlowDataset(Dataset):
         return len(self.data_pairs)
 
     def __getitem__(self, idx):
-        rgb_data = np.float32(np.load(self.data_pairs[idx][0]))
+        try:
+            rgb_data = np.float32(np.load(self.data_pairs[idx][0]))
+        except Exception as e:
+            print(f'RGB ERROR: {self.data_pairs[idx]}, {e}', flush=True)
+            return None, None, None
         self.spacial_transform.refresh_random(rgb_data[0])
 
         rgb_data = self.temporal_transform(rgb_data)
@@ -97,7 +101,12 @@ class RGBFlowDataset(Dataset):
         rgb_data = self.spacial_transform.transform(rgb_data)
         # print(rgb_data.shape)
         rgb_data = rgb_data.permute(1,0,2,3)
-        flow_data = np.float32(np.load(self.data_pairs[idx][1]))
+
+        try:
+            flow_data = np.float32(np.load(self.data_pairs[idx][1]))
+        except Exception as e:
+            print(f'FLOW ERROR: {self.data_pairs[idx]}, {e}', flush=True)
+            return None, None, None
         flow_data = self.temporal_transform(flow_data)
         if len(flow_data) == 0:
             print(f'FLOW EMPTY: {self.data_pairs[idx]}', flush=True)
