@@ -88,7 +88,7 @@ def train_model(models, criterion, optimizers, schedulers, num_epochs=25):
                         losses["composed"] = criterion(out_softmax.cpu(), labels.cpu())
                         running_losses["composed"] += losses["composed"].item() * data["rgb"].shape[0]
                         running_corrects["composed"] += torch.sum(preds == labels.data.cpu())
-                        running_f1s["composed"].append(f1_score(labels.data.cpu().numpy(), preds.numpy()))
+                        running_f1s["composed"].append(f1_score(labels.data.cpu().numpy(), preds.numpy(), average='macro'))
 
             if phase == 'train':
                 for scheduler in schedulers.values():
