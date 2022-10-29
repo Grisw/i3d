@@ -111,6 +111,13 @@ def train_model(models, criterion, optimizers, schedulers, num_epochs=25):
                     best_model_wts[stream] = copy.deepcopy(models[stream].state_dict())
                 if phase == 'val' and epoch_f1s[stream] > best_f1s[stream]:
                     best_f1s[stream] = epoch_f1s[stream]
+
+        if epoch % 2 == 0:
+            log('Save ckpt: epoch {}'.format(epoch))
+            for stream in streams:
+                temp_model_path = 'model/{}_{}_model_{}.pth'.format(args.session_id, epoch, stream)
+                torch.save(models[stream].state_dict(), temp_model_path)
+
         print()
 
     time_elapsed = time.time() - since
